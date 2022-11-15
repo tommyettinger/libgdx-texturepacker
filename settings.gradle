@@ -1,1 +1,1 @@
-include 'libgdx-texturepacker'
+include 'libgdx-texturepacker', 'libgdx-textureunpacker'

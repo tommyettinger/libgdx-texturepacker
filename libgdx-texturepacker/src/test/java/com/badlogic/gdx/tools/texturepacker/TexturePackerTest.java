@@ -26,6 +26,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.RandomXS128;
+import com.badlogic.gdx.tools.StartOnFirstThreadHelper;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker.Page;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker.Rect;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings;
@@ -110,6 +111,7 @@ public class TexturePackerTest extends ApplicationAdapter {
 	}
 
 	public static void main (String[] args) {
+		if (StartOnFirstThreadHelper.startNewJvmIfRequired()) return; // don't execute any code
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.disableAudio(true);
 		config.setTitle("");
