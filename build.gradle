@@ -1,0 +1,46 @@
+buildscript {
+	repositories {
+		mavenLocal()
+		mavenCentral()
+		google()
+		gradlePluginPortal()
+		maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+	}
+	dependencies {
+		classpath 'com.guardsquare:proguard-gradle:7.3.0-beta2'
+		classpath 'com.vanniktech:gradle-maven-publish-plugin:0.22.0'
+	}
+}
+apply plugin: 'java-library'
+apply plugin: 'com.vanniktech.maven.publish'
+
+allprojects {
+	apply plugin: 'eclipse'
+	apply plugin: 'idea'
+}
+
+configure(subprojects) {
+	apply plugin: 'java-library'
+	apply plugin: 'com.vanniktech.maven.publish'
+
+	sourceCompatibility = 1.8
+	compileJava {
+		options.incremental = true
+	}
+}
+
+[compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+
+subprojects {
+	version = "$VERSION_NAME"
+	ext.appName = 'libgdx-texturepacker'
+	repositories {
+		mavenLocal()
+		mavenCentral()
+		gradlePluginPortal()
+		maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+		maven { url 'https://jitpack.io' }
+	}
+}
+
+eclipse.project.name = 'libgdx-texturepacker' + '-parent'

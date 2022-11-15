@@ -1,0 +1,54 @@
+[compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+
+import proguard.gradle.ProGuardTask
+
+apply plugin: 'application'
+
+sourceCompatibility = 1.8
+mainClassName = 'com.badlogic.gdx.tools.texturepacker.TexturePacker'
+eclipse.project.name = appName + '-lwjgl3'
+sourceSets.main.resources.srcDirs = [file('../assets').path]
+
+dependencies {
+	implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
+	testImplementation ("com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"){
+		// exclude audio
+		exclude group: "org.jcraft", module: "jorbis"
+		exclude group: "org.lwjgl", module: "lwjgl-openal"
+	}
+	testImplementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+}
+
+jar {
+	archiveFileName.set("${appName}.jar")
+	duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+	dependsOn configurations.runtimeClasspath
+    from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    exclude('META-INF/INDEX.LIST', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA')
+    dependencies {
+        exclude('META-INF/INDEX.LIST', 'META-INF/maven/**')
+    }
+	manifest {
+		attributes 'Main-Class': project.mainClassName
+	}
+	doLast {
+		file(archiveFile).setExecutable(true, false)
+	}
+}
+
+task proguard(type: ProGuardTask) {
+//	(configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } + file("build/libs/${appName}.jar")).each { println(it) }
+	outputs.upToDateWhen { false }
+	configuration 'proguard-rules.pro'
+	//printmapping 'build/lib/out.map'
+	if (System.getProperty('java.version').startsWith('1.')) {
+		libraryjars "${System.getProperty('java.home')}/lib/rt.jar"
+	} else {
+		libraryjars "${System.getProperty('java.home')}/jmods/java.base.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
+	}
+
+	injars (file("build/libs/${appName}.jar"))
+	outjars "build/libs/${appName}-runnable-${version}.jar"
+}
+
+proguard.dependsOn jar
