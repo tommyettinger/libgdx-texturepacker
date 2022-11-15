@@ -23,6 +23,9 @@ public class TexturePackerUpscaleTest {
 		TexturePacker.Settings settings = new TexturePacker.Settings();
 		settings.scale = new float[] {4};
 		settings.scaleResampling = new TexturePacker.Resampling[] {TexturePacker.Resampling.nearest};
+		settings.legacyOutput = false;
+		settings.prettyPrint = false;
+		settings.flattenPaths = true;
 		TexturePacker packer = new TexturePacker(settings);
 		packer.addImage(new File("libgdx-texturepacker/src/test/resources/bobrgb888-32x32.png"));
 
