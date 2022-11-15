@@ -20,7 +20,7 @@ dependencies {
 }
 
 jar {
-	archiveFileName.set("${appName}.jar")
+	archiveFileName.set("${project.name}.jar")
 	duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 	dependsOn configurations.runtimeClasspath
     from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
@@ -47,8 +47,8 @@ task proguard(type: ProGuardTask) {
 		libraryjars "${System.getProperty('java.home')}/jmods/java.base.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
 	}
 
-	injars (file("build/libs/${appName}.jar"))
-	outjars "build/libs/${appName}-runnable-${version}.jar"
+	injars (file("build/libs/${project.name}.jar"))
+	outjars "build/libs/${project.name}-runnable-${version}.jar"
 }
 
 proguard.dependsOn jar
