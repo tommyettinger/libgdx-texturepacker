@@ -1,5 +1,5 @@
 # libgdx-tiledmappacker
-A standalone version of gdx-tools' TiledMapPacker.
+A standalone version of gdx-tools' TexturePacker.
 
 See the Releases section for runnable JARs.
 
