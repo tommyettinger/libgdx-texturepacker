@@ -13,10 +13,11 @@ dependencies {
 	implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
 }
 
-jar {
-	archiveFileName.set("${project.name}.jar")
+task fatJar(type: org.gradle.jvm.tasks.Jar, dependsOn: classes) {
+	archiveFileName.set("${project.name}-fat.jar")
 	duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 	dependsOn configurations.runtimeClasspath
+	from files(sourceSets.main.output.getClassesDirs())
     from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
     exclude('META-INF/INDEX.LIST', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA')
     dependencies {
@@ -40,9 +41,8 @@ task proguard(type: ProGuardTask) {
 	} else {
 		libraryjars "${System.getProperty('java.home')}/jmods/java.base.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
 	}
-
-	injars (file("build/libs/${project.name}.jar"))
+	injars (file("build/libs/${project.name}-fat.jar"))
 	outjars "build/libs/${project.name}-runnable-${version}.jar"
 }
 
-proguard.dependsOn jar
+proguard.dependsOn fatJar
