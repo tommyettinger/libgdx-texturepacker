@@ -1,10 +1,8 @@
-# proguard github example stuff for application
-# https://github.com/Guardsquare/proguard/blob/master/examples/gradle/applications.gradle
+-keepclasseswithmembernames class * {
+  native <methods>;
+}
+
 -keepattributes '*Annotation*'
-
--keepclasseswithmembers public class * { public static void main(java.lang.String[]); }
-
--keepclasseswithmembernames class * { native <methods>; }
 
 -keepclassmembers enum * {
     public static **[] values();
@@ -19,6 +17,8 @@
          java.lang.Object writeReplace();
          java.lang.Object readResolve();
      }
+
+-keep public class * { public static void main(java.lang.String[]); }
 
 -forceprocessing
 #-classobfuscationdictionary 'obfuscationClassNames.txt'

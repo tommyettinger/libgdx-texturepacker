@@ -19,6 +19,7 @@ dependencies {
 	testImplementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
 }
 
+//This is named differently to allow the normal jar task to still work without including libs.
 task fatJar(type: org.gradle.jvm.tasks.Jar, dependsOn: classes) {
 	archiveFileName.set("${project.name}-fat.jar")
 	duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
