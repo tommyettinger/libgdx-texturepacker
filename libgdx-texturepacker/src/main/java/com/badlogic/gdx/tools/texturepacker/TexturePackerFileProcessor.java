@@ -176,7 +176,7 @@ public class TexturePackerFileProcessor extends FileProcessor {
 		if (ignoreDirs.contains(inputDir.inputFile)) return;
 
 		// Find first parent with settings, or use defaults.
-		Settings settings = null;
+		Settings settings;
 		File parent = inputDir.inputFile;
 		while (true) {
 			settings = dirToSettings.get(parent);

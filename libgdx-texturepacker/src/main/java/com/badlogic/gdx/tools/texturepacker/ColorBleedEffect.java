@@ -62,8 +62,6 @@ public class ColorBleedEffect {
 				int column = x + offsets[i];
 				int row = y + offsets[i + 1];
 				if (column < 0 || column >= width || row < 0 || row >= height) {
-					column = x;
-					row = y;
 					continue;
 				}
 

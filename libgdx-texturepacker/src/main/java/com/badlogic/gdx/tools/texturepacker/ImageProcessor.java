@@ -154,7 +154,7 @@ public class ImageProcessor {
 
 		boolean isPatch = name.endsWith(".9");
 		int[] splits = null, pads = null;
-		Rect rect = null;
+		Rect rect;
 		if (isPatch) {
 			// Strip ".9" from file name, read ninepatch split pixels, and strip ninepatch split pixels.
 			name = name.substring(0, name.length() - 2);

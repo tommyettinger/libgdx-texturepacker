@@ -28,6 +28,7 @@ import com.badlogic.gdx.utils.FloatArray;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Null;
+import com.badlogic.gdx.utils.ObjectSet;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -44,10 +45,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
 /** @author Nathan Sweet */
 public class TexturePacker {
@@ -55,7 +55,7 @@ public class TexturePacker {
 	private final Settings settings;
 	private Packer packer;
 	private final ImageProcessor imageProcessor;
-	private final Array<InputImage> inputImages = new Array();
+	private final Array<InputImage> inputImages = new Array<>();
 	private ProgressListener progress;
 
 	/** @param rootDir See {@link #setRootDir(File)}. */
@@ -204,7 +204,7 @@ public class TexturePacker {
 			Page page = pages.get(p);
 
 			int width = page.width, height = page.height;
-			int edgePadX = 0, edgePadY = 0;
+			int edgePadX, edgePadY;
 			if (settings.edgePadding) {
 				edgePadX = settings.paddingX;
 				edgePadY = settings.paddingY;
@@ -231,25 +231,24 @@ public class TexturePacker {
 			page.imageHeight = height;
 
 			File outputFile;
-			while (true) {
+			do {
 				String name = imageName;
 				if (fileIndex > 1) {
 					// Last character is a digit or a digit + 'x'.
 					char last = name.charAt(name.length() - 1);
 					if (Character.isDigit(last)
-						|| (name.length() > 3 && last == 'x' && Character.isDigit(name.charAt(name.length() - 2)))) {
+							|| (name.length() > 3 && last == 'x' && Character.isDigit(name.charAt(name.length() - 2)))) {
 						name += "-";
 					}
 					name += fileIndex;
 				}
 				fileIndex++;
 				outputFile = new File(packDir, name + "." + settings.outputFormat);
-				if (!outputFile.exists()) break;
-			}
+			} while (outputFile.exists());
 			new FileHandle(outputFile).parent().mkdirs();
 			page.imageName = outputFile.getName();
 
-			BufferedImage canvas = new BufferedImage(width, height, getBufferedImageType(settings.format));
+			BufferedImage canvas = new BufferedImage(width, height, getBufferedImageType());
 			Graphics2D g = (Graphics2D)canvas.getGraphics();
 
 			if (!settings.silent) System.out.println("Writing " + canvas.getWidth() + "x" + canvas.getHeight() + ": " + outputFile);
@@ -401,15 +400,8 @@ public class TexturePacker {
 			}
 		}
 
-		String tab = "", colon = ":", comma = ",";
-		if (settings.prettyPrint) {
-			tab = "\t";
-			colon = ": ";
-			comma = ", ";
-		}
-
 		boolean appending = packFile.exists();
-		OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(packFile, true), "UTF-8");
+		OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(packFile, true), StandardCharsets.UTF_8);
 		for (int i = 0, n = pages.size; i < n; i++) {
 			Page page = pages.get(i);
 
@@ -426,7 +418,7 @@ public class TexturePacker {
 					writeRectLegacy(writer, page, rect, rect.name);
 				else
 					writeRect(writer, page, rect, rect.name);
-				Array<Alias> aliases = new Array(rect.aliases.toArray());
+				Array<Alias> aliases = rect.aliases.iterator().toArray();
 				aliases.sort();
 				for (Alias alias : aliases) {
 					Rect aliasRect = new Rect();
@@ -487,7 +479,7 @@ public class TexturePacker {
 				+ rect.originalWidth + comma + rect.originalHeight + "\n");
 		}
 
-		if (rect.rotated) writer.write(tab + "rotate" + colon + rect.rotated + "\n");
+		if (rect.rotated) writer.write(tab + "rotate" + colon + "true\n");
 
 		if (rect.splits != null) {
 			writer.write(tab + "split" + colon //
@@ -538,7 +530,7 @@ public class TexturePacker {
 		return null;
 	}
 
-	private int getBufferedImageType (Format format) {
+	private int getBufferedImageType () {
 		switch (settings.format) {
 		case RGBA8888:
 		case RGBA4444:
@@ -610,7 +602,7 @@ public class TexturePacker {
 		public int width, height; // Portion of page taken by this region, including padding.
 		public int index;
 		public boolean rotated;
-		public Set<Alias> aliases = new HashSet<Alias>();
+		public ObjectSet<Alias> aliases = new ObjectSet<>();
 		public int[] splits;
 		public int[] pads;
 		public boolean canRotate = true;
@@ -702,9 +694,8 @@ public class TexturePacker {
 			if (getClass() != obj.getClass()) return false;
 			Rect other = (Rect)obj;
 			if (name == null) {
-				if (other.name != null) return false;
-			} else if (!name.equals(other.name)) return false;
-			return true;
+				return other.name == null;
+			} else return name.equals(other.name);
 		}
 
 		@Override
@@ -717,7 +708,7 @@ public class TexturePacker {
 		}
 	}
 
-	static public enum Resampling {
+	public enum Resampling {
 		nearest(RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR), //
 		bilinear(RenderingHints.VALUE_INTERPOLATION_BILINEAR), //
 		bicubic(RenderingHints.VALUE_INTERPOLATION_BICUBIC);
@@ -800,10 +791,10 @@ public class TexturePacker {
 		return false;
 	}
 
-	static public interface Packer {
-		public Array<Page> pack (Array<Rect> inputRects);
+	public interface Packer {
+		Array<Page> pack (Array<Rect> inputRects);
 
-		public Array<Page> pack (ProgressListener progress, Array<Rect> inputRects);
+		Array<Page> pack (ProgressListener progress, Array<Rect> inputRects);
 	}
 
 	static final class InputImage {
@@ -912,7 +903,7 @@ public class TexturePacker {
 		public String outputFormat = "png";
 		public float jpegQuality = 0.9f;
 		public boolean ignoreBlankImages = true;
-		public boolean fast;
+		public boolean fast = true;
 		public boolean debug;
 		public boolean silent;
 		public boolean combineSubdirectories;
@@ -928,8 +919,8 @@ public class TexturePacker {
 		public String[] scaleSuffix = {""};
 		public Resampling[] scaleResampling = {Resampling.bicubic};
 		public String atlasExtension = ".atlas";
-		public boolean prettyPrint = true;
-		public boolean legacyOutput = true;
+		public boolean prettyPrint = false;
+		public boolean legacyOutput = false;
 
 		public Settings () {
 		}

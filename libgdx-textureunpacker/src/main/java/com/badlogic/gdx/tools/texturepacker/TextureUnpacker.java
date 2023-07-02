@@ -96,8 +96,8 @@ public class TextureUnpacker {
 
 				// check if the page this region is in is currently loaded in a Buffered Image
 				if (region.page == page) {
-					BufferedImage splitImage = null;
-					String extension = null;
+					BufferedImage splitImage;
+					String extension;
 
 					// check if the region is a ninepatch or a normal image and delegate accordingly
 					if (region.findValue("split") == null) {
@@ -113,12 +113,12 @@ public class TextureUnpacker {
 						extension = OUTPUT_TYPE;
 					} else {
 						splitImage = extractNinePatch(img, region, outputDirFile);
-						extension = String.format("9.%s", OUTPUT_TYPE);
+						extension = "9." + OUTPUT_TYPE;
 					}
 
 					// check if the parent directories of this image file exist and create them if not
 					File imgOutput = new File(outputDirFile,
-						String.format("%s.%s", region.index == -1 ? region.name : region.name + "_" + region.index, extension));
+						region.index == -1 ? region.name + "." + extension : region.name + "_" + region.index + "." + extension);
 					File imgDir = imgOutput.getParentFile();
 					if (!imgDir.exists()) {
 						if (!quiet) System.out.printf("Creating directory: %s%n", imgDir.getPath());
@@ -143,7 +143,7 @@ public class TextureUnpacker {
 	 * @param padding padding (in pixels) to apply to the image
 	 * @return The extracted image */
 	private BufferedImage extractImage (BufferedImage page, Region region, File outputDirFile, int padding) {
-		BufferedImage splitImage = null;
+		BufferedImage splitImage;
 
 		// get the needed part of the page and rotate if needed
 		if (region.rotate) {
