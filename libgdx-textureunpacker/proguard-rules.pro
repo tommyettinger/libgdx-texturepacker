@@ -20,8 +20,6 @@
          java.lang.Object readResolve();
      }
 
--keep public class !com.badlogic.gdx.tools.** { *; }
-
 -forceprocessing
 #-classobfuscationdictionary 'obfuscationClassNames.txt'
 -ignorewarnings
