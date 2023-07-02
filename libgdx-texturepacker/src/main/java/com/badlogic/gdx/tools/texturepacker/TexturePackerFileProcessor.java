@@ -38,11 +38,11 @@ import java.util.regex.Pattern;
 public class TexturePackerFileProcessor extends FileProcessor {
 	private final Settings defaultSettings;
 	private final ProgressListener progress;
-	private ObjectMap<File, Settings> dirToSettings = new ObjectMap();
-	private Json json = new Json();
-	private String packFileName;
+	private final ObjectMap<File, Settings> dirToSettings = new ObjectMap<>();
+	private final Json json = new Json();
+	private final String packFileName;
 	private File root;
-	ArrayList<File> ignoreDirs = new ArrayList();
+	ArrayList<File> ignoreDirs = new ArrayList<>();
 	boolean countOnly;
 	int packCount;
 
@@ -74,7 +74,7 @@ public class TexturePackerFileProcessor extends FileProcessor {
 		root = inputFile;
 
 		// Collect pack.json setting files.
-		final ArrayList<File> settingsFiles = new ArrayList();
+		final ArrayList<File> settingsFiles = new ArrayList<>();
 		FileProcessor settingsProcessor = new FileProcessor() {
 			protected void processFile (Entry inputFile) throws Exception {
 				settingsFiles.add(inputFile.inputFile);
@@ -156,7 +156,6 @@ public class TexturePackerFileProcessor extends FileProcessor {
 			deleteProcessor.setRecursive(false);
 
 			File packFile = new File(rootSettings.getScaledPackFileName(packFileName, i));
-			String scaledPackFileName = packFile.getName();
 
 			String prefix = packFile.getName();
 			int dotIndex = prefix.lastIndexOf('.');

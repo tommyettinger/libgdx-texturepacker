@@ -47,7 +47,7 @@ public class TexturePackerTest extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		Settings settings = new Settings();
-		settings.fast = false;
+		settings.fast = true;
 		settings.pot = false;
 		settings.maxWidth = 1024;
 		settings.maxHeight = 1024;
@@ -56,7 +56,7 @@ public class TexturePackerTest extends ApplicationAdapter {
 
 		if (pages == null) {
 			Random random = new RandomXS128(1243);
-			Array<Rect> inputRects = new Array();
+			Array<Rect> inputRects = new Array<>();
 			for (int i = 0; i < 240; i++) {
 				Rect rect = new Rect();
 				rect.name = "rect" + i;

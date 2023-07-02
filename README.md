@@ -20,6 +20,19 @@ complicated set of steps. The unpacker uses `java -jar libgdx-textureunpacker-ru
 Both runnable JARs work on Windows (x64), Linux (x64 and ARM), and MacOS (x64 and ARM). This means you can run libGDX's
 TexturePacker on macOS machines with Apple Silicon chips.
 
+The TexturePacker tool here has the same defaults as the one in gdx-tools, through version 1.11.0.1 . After that, this
+tool (will) default to turning on fast packing, turning off legacy format, and turning off pretty-printing for atlases.
+I have good reasons for this! Legacy format is only needed if you are loading atlases with libGDX 1.9.13 or older, which
+is an old enough version that you can be expected to have a working set of tools if you still need it. Pretty-print only
+applies if you're reading atlas files as a human reader, which in my opinion should be fairly rare. Both of those
+options make atlas files larger if turned on, sometimes significantly, for no real benefit. Fast packing is turned on
+because it can make the difference between maybe a half-hour packing process (if you have a very large atlas and fast
+mode is on), and what could be over 10 hours (for the same very large atlas with fast mode off). The only downside to
+fast packing is that it sometimes doesn't pack as tightly, and might need another atlas page as a result. However, if a
+pack process seems like it will take all day, many people just won't bother, and might never notice that fast mode could
+make a sizable difference. Having fast mode on by default makes packing start fast with loose packing, and you can
+choose to make it slow with tight packing if you need it. 
+
 ## As A Library
 
 You can depend on this using Gradle, Maven, or other project-handling tools.

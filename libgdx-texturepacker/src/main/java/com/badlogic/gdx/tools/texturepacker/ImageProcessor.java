@@ -40,11 +40,11 @@ import java.util.regex.Pattern;
 
 public class ImageProcessor {
 	static private final BufferedImage emptyImage = new BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR);
-	static private Pattern indexPattern = Pattern.compile("(.+)_(\\d+)$");
+	static private final Pattern indexPattern = Pattern.compile("(.+)_(\\d+)$");
 
 	private final Settings settings;
-	private final HashMap<String, Rect> crcs = new HashMap();
-	private final Array<Rect> rects = new Array();
+	private final HashMap<String, Rect> crcs = new HashMap<>();
+	private final Array<Rect> rects = new Array<>();
 	private float scale = 1;
 	private Resampling resampling = Resampling.bicubic;
 
@@ -201,7 +201,7 @@ public class ImageProcessor {
 			rect.pads = pads;
 			rect.canRotate = false;
 		} else {
-			rect = stripWhitespace(name, image);
+			rect = stripWhitespace(image);
 			if (rect == null) return null;
 		}
 
@@ -211,7 +211,7 @@ public class ImageProcessor {
 	}
 
 	/** Strips whitespace and returns the rect, or null if the image should be ignored. */
-	protected Rect stripWhitespace (String name, BufferedImage source) {
+	protected Rect stripWhitespace (BufferedImage source) {
 		WritableRaster alphaRaster = source.getAlphaRaster();
 		if (alphaRaster == null || (!settings.stripWhitespaceX && !settings.stripWhitespaceY))
 			return new Rect(source, 0, 0, source.getWidth(), source.getHeight(), false);
@@ -285,7 +285,7 @@ public class ImageProcessor {
 		return new Rect(source, left, top, newWidth, newHeight, false);
 	}
 
-	static private String splitError (int x, int y, int[] rgba, String name) {
+	static private void splitError (int x, int y, int[] rgba, String name) {
 		throw new RuntimeException("Invalid " + name + " ninepatch split pixel at " + x + ", " + y + ", rgba: " + rgba[0] + ", "
 			+ rgba[1] + ", " + rgba[2] + ", " + rgba[3]);
 	}
@@ -324,10 +324,10 @@ public class ImageProcessor {
 		}
 
 		if (scale != 1) {
-			startX = (int)Math.round(startX * scale);
-			endX = (int)Math.round(endX * scale);
-			startY = (int)Math.round(startY * scale);
-			endY = (int)Math.round(endY * scale);
+			startX = Math.round(startX * scale);
+			endX = Math.round(endX * scale);
+			startY = Math.round(startY * scale);
+			endY = Math.round(endY * scale);
 		}
 
 		return new int[] {startX, endX, startY, endY};
@@ -355,12 +355,12 @@ public class ImageProcessor {
 		getSplitPoint(raster, name, right, endY + 1, true, false);
 
 		// No pads.
-		if (startX == 0 && endX == 0 && startY == 0 && endY == 0) {
+		if (startX == 0 && startY == 0) {
 			return null;
 		}
 
 		// -2 here is because the coordinates were computed before the 1px border was stripped.
-		if (startX == 0 && endX == 0) {
+		if (startX == 0) {
 			startX = -1;
 			endX = -1;
 		} else {
@@ -372,7 +372,7 @@ public class ImageProcessor {
 				endX = raster.getWidth() - 2;
 			}
 		}
-		if (startY == 0 && endY == 0) {
+		if (startY == 0) {
 			startY = -1;
 			endY = -1;
 		} else {
@@ -386,10 +386,10 @@ public class ImageProcessor {
 		}
 
 		if (scale != 1) {
-			startX = (int)Math.round(startX * scale);
-			endX = (int)Math.round(endX * scale);
-			startY = (int)Math.round(startY * scale);
-			endY = (int)Math.round(endY * scale);
+			startX = Math.round(startX * scale);
+			endX = Math.round(endX * scale);
+			startY = Math.round(startY * scale);
+			endY = Math.round(endY * scale);
 		}
 
 		int[] pads = new int[] {startX, endX, startY, endY};

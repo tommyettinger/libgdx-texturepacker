@@ -66,8 +66,8 @@ public class MaxRectsPacker implements Packer {
 				// Sort by longest side if rotation is enabled.
 				sort.sort(inputRects, new Comparator<Rect>() {
 					public int compare (Rect o1, Rect o2) {
-						int n1 = o1.width > o1.height ? o1.width : o1.height;
-						int n2 = o2.width > o2.height ? o2.width : o2.height;
+						int n1 = Math.max(o1.width, o1.height);
+						int n2 = Math.max(o2.width, o2.height);
 						return n2 - n1;
 					}
 				});
@@ -81,7 +81,7 @@ public class MaxRectsPacker implements Packer {
 			}
 		}
 
-		Array<Page> pages = new Array();
+		Array<Page> pages = new Array<>();
 		while (inputRects.size > 0) {
 			if(progress != null) {
 				progress.count = n - inputRects.size + 1;
@@ -130,7 +130,7 @@ public class MaxRectsPacker implements Packer {
 					throw new RuntimeException("Image does not fit within max page width " + settings.maxWidth + paddingMessage + ": "
 						+ rect.name + " " + width + "x" + height);
 				}
-				if (height > maxHeight && (!settings.rotation || width > maxHeight)) {
+				if (height > maxHeight) {
 					String paddingMessage = edgePadY ? (" and Y edge padding " + paddingY + "*2") : "";
 					throw new RuntimeException("Image does not fit within max page height " + settings.maxHeight + paddingMessage
 						+ ": " + rect.name + " " + width + "x" + height);
@@ -225,7 +225,7 @@ public class MaxRectsPacker implements Packer {
 			if (!settings.fast) {
 				result = maxRects.pack(inputRects, methods[i]);
 			} else {
-				Array<Rect> remaining = new Array();
+				Array<Rect> remaining = new Array<>();
 				for (int ii = 0, nn = inputRects.size; ii < nn; ii++) {
 					Rect rect = inputRects.get(ii);
 					if (maxRects.insert(rect, methods[i]) == null) {
@@ -293,14 +293,14 @@ public class MaxRectsPacker implements Packer {
 		}
 	}
 
-	/** Maximal rectangles bin packing algorithm. Adapted from this C++ public domain source:
-	 * http://clb.demon.fi/projects/even-more-rectangle-bin-packing
-	 * @author Jukka Jyl�nki
+	/** Maximal rectangles bin packing algorithm. Adapted from
+	 * <a href="http://clb.demon.fi/projects/even-more-rectangle-bin-packing">this C++ public domain source</a>.
+	 * @author Jukka Jylänki
 	 * @author Nathan Sweet */
 	class MaxRects {
 		private int binWidth, binHeight;
-		private final Array<Rect> usedRectangles = new Array();
-		private final Array<Rect> freeRectangles = new Array();
+		private final Array<Rect> usedRectangles = new Array<>();
+		private final Array<Rect> freeRectangles = new Array<>();
 
 		public void init (int width, int height) {
 			binWidth = width;
@@ -348,7 +348,7 @@ public class MaxRectsPacker implements Packer {
 
 		/** For each rectangle, packs each one then chooses the best and packs that. Slow! */
 		public Page pack (Array<Rect> rects, FreeRectChoiceHeuristic method) {
-			rects = new Array(rects);
+			rects = new Array<>(rects);
 			while (rects.size > 0) {
 				int bestRectIndex = -1;
 				Rect bestNode = new Rect();
@@ -390,7 +390,7 @@ public class MaxRectsPacker implements Packer {
 				h = Math.max(h, rect.y + rect.height);
 			}
 			Page result = new Page();
-			result.outputRects = new Array(usedRectangles);
+			result.outputRects = new Array<>(usedRectangles);
 			result.occupancy = getOccupancy();
 			result.width = w;
 			result.height = h;

@@ -89,21 +89,21 @@ public class ColorBleedEffect {
 	}
 
 	static private int red (int argb) {
-		return (argb >> 16) & 0xFF;
+		return (argb >>> 16) & 0xFF;
 	}
 
 	static private int green (int argb) {
-		return (argb >> 8) & 0xFF;
+		return (argb >>> 8) & 0xFF;
 	}
 
 	static private int blue (int argb) {
-		return (argb >> 0) & 0xFF;
+		return argb & 0xFF;
 	}
 
 	static private int argb (int a, int r, int g, int b) {
 		if (a < 0 || a > 255 || r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255)
 			throw new IllegalArgumentException("Invalid RGBA: " + r + ", " + g + "," + b + "," + a);
-		return ((a & 0xFF) << 24) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | ((b & 0xFF) << 0);
+		return ((a & 0xFF) << 24) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | ((b & 0xFF));
 	}
 
 	static private class Mask {
@@ -164,7 +164,7 @@ public class ColorBleedEffect {
 		}
 
 		static private int alpha (int argb) {
-			return (argb >> 24) & 0xff;
+			return argb >>> 24;
 		}
 	}
 }

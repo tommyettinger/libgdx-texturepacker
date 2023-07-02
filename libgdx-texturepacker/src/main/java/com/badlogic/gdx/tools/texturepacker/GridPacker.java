@@ -65,7 +65,7 @@ public class GridPacker implements Packer {
 
 		inputRects.reverse();
 
-		Array<Page> pages = new Array();
+		Array<Page> pages = new Array<>();
 		while (inputRects.size > 0) {
 			if(progress != null) {
 				progress.count = n - inputRects.size + 1;
@@ -81,7 +81,7 @@ public class GridPacker implements Packer {
 
 	private Page packPage (Array<Rect> inputRects, int cellWidth, int cellHeight, int maxWidth, int maxHeight) {
 		Page page = new Page();
-		page.outputRects = new Array();
+		page.outputRects = new Array<>();
 
 		int n = inputRects.size;
 		int x = 0, y = 0;
