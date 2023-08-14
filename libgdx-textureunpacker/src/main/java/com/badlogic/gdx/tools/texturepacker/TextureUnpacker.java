@@ -46,7 +46,7 @@ public class TextureUnpacker {
 
 	/** Checks the command line arguments for correctness.
 	 * @return 0 If arguments are invalid, Number of arguments otherwise. */
-	private int parseArguments (String[] args) {
+	private static int parseArguments (String[] args) {
 		int numArgs = args.length;
 		// check if number of args is right
 		if (numArgs < 1) return 0;
@@ -59,7 +59,7 @@ public class TextureUnpacker {
 		return extension && directory ? numArgs : 0;
 	}
 
-	private boolean checkDirectoryValidity (String directory) {
+	private static boolean checkDirectoryValidity (String directory) {
 		File checkFile = new File(directory);
 		boolean path = true;
 		// try to get the canonical path, if this fails the path is not valid
@@ -212,13 +212,25 @@ public class TextureUnpacker {
 		this.quiet = quiet;
 	}
 
-	public static void main (String[] args) {
-		TextureUnpacker unpacker = new TextureUnpacker();
+	public static void splitFiles(String atlasFile, String imageDir, String outputDir) {
+		File atlasFileHandle = new File(atlasFile).getAbsoluteFile();
+		if (!atlasFileHandle.exists()) throw new RuntimeException("Atlas file not found: " + atlasFileHandle.getAbsolutePath());
+		String atlasParentPath = atlasFileHandle.getParentFile().getAbsolutePath();
 
+		// Set the directory variables to a default when they weren't given in the variables
+		if (imageDir == null) imageDir = atlasParentPath;
+		if (outputDir == null) outputDir = (new File(atlasParentPath, DEFAULT_OUTPUT_PATH)).getAbsolutePath();
+
+		// Opens the atlas file from the specified filename
+		TextureAtlasData atlas = new TextureAtlasData(new FileHandle(atlasFile), new FileHandle(imageDir), false);
+		new TextureUnpacker().splitAtlas(atlas, outputDir);
+
+	}
+	public static void main (String[] args) {
 		String atlasFile = null, imageDir = null, outputDir = null;
 
 		// parse the arguments and display the help text if there is a problem with the command line arguments
-		switch (unpacker.parseArguments(args)) {
+		switch (parseArguments(args)) {
 		case 0:
 			System.out.println(HELP);
 			return;
@@ -230,16 +242,6 @@ public class TextureUnpacker {
 			atlasFile = args[0];
 		}
 
-		File atlasFileHandle = new File(atlasFile).getAbsoluteFile();
-		if (!atlasFileHandle.exists()) throw new RuntimeException("Atlas file not found: " + atlasFileHandle.getAbsolutePath());
-		String atlasParentPath = atlasFileHandle.getParentFile().getAbsolutePath();
-
-		// Set the directory variables to a default when they weren't given in the variables
-		if (imageDir == null) imageDir = atlasParentPath;
-		if (outputDir == null) outputDir = (new File(atlasParentPath, DEFAULT_OUTPUT_PATH)).getAbsolutePath();
-
-		// Opens the atlas file from the specified filename
-		TextureAtlasData atlas = new TextureAtlasData(new FileHandle(atlasFile), new FileHandle(imageDir), false);
-		unpacker.splitAtlas(atlas, outputDir);
+		splitFiles(atlasFile, imageDir, outputDir);
 	}
 }
