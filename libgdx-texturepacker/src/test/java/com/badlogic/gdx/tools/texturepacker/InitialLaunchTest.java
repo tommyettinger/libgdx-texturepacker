@@ -7,6 +7,7 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.tools.StartupHelper;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class InitialLaunchTest extends ApplicationAdapter {
@@ -27,6 +28,8 @@ public class InitialLaunchTest extends ApplicationAdapter {
     }
 
     public static void main(String[] arg) {
+        if (StartupHelper. startNewJvmIfRequired()) return; // This handles macOS support and helps on Windows.
+
         TexturePacker.Settings settings = new TexturePacker.Settings();
         TexturePacker.process(settings, "testGraphics/unpacked", "tmp/atlas", "default.atlas");
         Lwjgl3ApplicationConfiguration cfg = new Lwjgl3ApplicationConfiguration();
