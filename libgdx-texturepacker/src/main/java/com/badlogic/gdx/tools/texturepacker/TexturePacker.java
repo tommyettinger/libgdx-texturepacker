@@ -76,7 +76,9 @@ public class TexturePacker {
 				throw new RuntimeException("If mod4 is true, maxHeight must be evenly divisible by 4: " + settings.maxHeight);
 		}
 
-		if (settings.grid)
+		if (settings.pr)
+			packer = new MaxRectsPackerPR(settings);
+		else if (settings.grid)
 			packer = new GridPacker(settings);
 		else
 			packer = new MaxRectsPacker(settings);
@@ -915,6 +917,7 @@ public class TexturePacker {
 		public int bleedIterations = 2;
 		public boolean limitMemory = true;
 		public boolean grid;
+		public boolean pr;
 		public float[] scale = {1};
 		public String[] scaleSuffix = {""};
 		public Resampling[] scaleResampling = {Resampling.bicubic};
@@ -968,6 +971,7 @@ public class TexturePacker {
 			bleedIterations = settings.bleedIterations;
 			limitMemory = settings.limitMemory;
 			grid = settings.grid;
+			pr = settings.pr;
 			scale = Arrays.copyOf(settings.scale, settings.scale.length);
 			scaleSuffix = Arrays.copyOf(settings.scaleSuffix, settings.scaleSuffix.length);
 			scaleResampling = Arrays.copyOf(settings.scaleResampling, settings.scaleResampling.length);

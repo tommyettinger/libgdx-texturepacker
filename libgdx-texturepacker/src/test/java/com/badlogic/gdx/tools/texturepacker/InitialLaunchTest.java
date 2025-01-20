@@ -8,14 +8,19 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.tools.StartupHelper;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.ScreenUtils;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 
 public class InitialLaunchTest extends ApplicationAdapter {
     TextureAtlas atlas;
     SpriteBatch batch;
     @Override
     public void create() {
-        atlas = new TextureAtlas(Gdx.files.local("tmp/atlas/default.atlas"));
+        atlas = new TextureAtlas(Gdx.files.local("tmp/cgAtlas/default.atlas"));
+//        atlas = new TextureAtlas(Gdx.files.local("tmp/atlas/default.atlas"));
         batch = new SpriteBatch();
     }
 
@@ -27,11 +32,21 @@ public class InitialLaunchTest extends ApplicationAdapter {
         batch.end();
     }
 
-    public static void main(String[] arg) {
+    /**
+     * PR not used: Processed in 89456 ms.
+     * PR used:     Processed in 8949 ms.
+     * @param arg
+     * @throws FileNotFoundException
+     */
+    public static void main(String[] arg) throws FileNotFoundException {
         if (StartupHelper. startNewJvmIfRequired()) return; // This handles macOS support and helps on Windows.
 
-        TexturePacker.Settings settings = new TexturePacker.Settings();
-        TexturePacker.process(settings, "testGraphics/unpacked", "tmp/atlas", "default.atlas");
+        long startTime = System.currentTimeMillis();
+        TexturePacker.Settings settings = new Json().fromJson(TexturePacker.Settings.class, new FileReader("testGraphics/cg/pack.json"));
+        TexturePacker.process(settings, "testGraphics/cg/", "tmp/cgAtlas" + (settings.pr ? "PR/" : "/"), "default.atlas");
+//        TexturePacker.Settings settings = new TexturePacker.Settings();
+//        TexturePacker.process(settings, "testGraphics/unpacked", "tmp/atlas", "default.atlas");
+        System.out.println("Processed in " + (System.currentTimeMillis() - startTime) + " ms.");
         Lwjgl3ApplicationConfiguration cfg = new Lwjgl3ApplicationConfiguration();
         cfg.disableAudio(true);
         new Lwjgl3Application(new InitialLaunchTest(), cfg);
