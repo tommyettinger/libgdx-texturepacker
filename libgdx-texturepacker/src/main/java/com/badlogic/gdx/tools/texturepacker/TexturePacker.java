@@ -78,8 +78,8 @@ public class TexturePacker {
 
 		if (settings.grid)
 			packer = new GridPacker(settings);
-		else if (settings.fast)
-			packer = new MaxRectsPackerFast(settings);
+		else if (settings.faster)
+			packer = new MaxRectsPackerFaster(settings);
 		else
 			packer = new MaxRectsPacker(settings);
 
@@ -906,6 +906,7 @@ public class TexturePacker {
 		public float jpegQuality = 0.9f;
 		public boolean ignoreBlankImages = true;
 		public boolean fast = true;
+		public boolean faster = true;
 		public boolean debug;
 		public boolean silent;
 		public boolean combineSubdirectories;
@@ -935,6 +936,7 @@ public class TexturePacker {
 		/** Copies values from another instance to the current one */
 		public void set (Settings settings) {
 			fast = settings.fast;
+			faster = settings.faster;
 			rotation = settings.rotation;
 			pot = settings.pot;
 			multipleOfFour = settings.multipleOfFour;
