@@ -24,7 +24,7 @@
 	outputFormat: png,
 	jpegQuality: 0.9,
 	ignoreBlankImages: true,
-	fast: true,
+	fast: false,
 	faster: true,
 	debug: false,
 	combineSubdirectories: true,

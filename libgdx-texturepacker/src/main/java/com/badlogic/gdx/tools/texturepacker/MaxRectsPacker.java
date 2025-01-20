@@ -75,7 +75,7 @@ public class MaxRectsPacker implements Packer {
 				// Sort only by width (largest to smallest) if rotation is disabled.
 				sort.sort(inputRects, new Comparator<Rect>() {
 					public int compare (Rect o1, Rect o2) {
-						return o2.width - o1.width;
+						return o2.width * o2.height - o1.width * o1.height;
 					}
 				});
 			}
