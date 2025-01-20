@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -19,7 +20,9 @@ public class InitialLaunchTest extends ApplicationAdapter {
     SpriteBatch batch;
     @Override
     public void create() {
-        atlas = new TextureAtlas(Gdx.files.local("tmp/cgAtlas/default.atlas"));
+        FileHandle loc = Gdx.files.local("tmp/cgAtlas/default.atlas");
+        if(!loc.exists()) loc = Gdx.files.local("tmp/cgAtlasFast/default.atlas");
+        atlas = new TextureAtlas(loc);
 //        atlas = new TextureAtlas(Gdx.files.local("tmp/atlas/default.atlas"));
         batch = new SpriteBatch();
     }
@@ -43,7 +46,7 @@ public class InitialLaunchTest extends ApplicationAdapter {
 
         long startTime = System.currentTimeMillis();
         TexturePacker.Settings settings = new Json().fromJson(TexturePacker.Settings.class, new FileReader("testGraphics/cg/pack.json"));
-        TexturePacker.process(settings, "testGraphics/cg/", "tmp/cgAtlas" + (settings.pr ? "PR/" : "/"), "default.atlas");
+        TexturePacker.process(settings, "testGraphics/cg/", "tmp/cgAtlas" + (settings.fast ? "Fast/" : "/"), "default.atlas");
 //        TexturePacker.Settings settings = new TexturePacker.Settings();
 //        TexturePacker.process(settings, "testGraphics/unpacked", "tmp/atlas", "default.atlas");
         System.out.println("Processed in " + (System.currentTimeMillis() - startTime) + " ms.");

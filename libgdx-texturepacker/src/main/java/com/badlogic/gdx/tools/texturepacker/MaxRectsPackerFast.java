@@ -31,7 +31,7 @@ import com.badlogic.gdx.utils.Sort;
 /** Packs pages of images using the maximal rectangles bin packing algorithm by Jukka Jylänki. A brute force binary search is used
  * to pack into the smallest bin possible.
  * @author Nathan Sweet */
-public class MaxRectsPackerPR implements Packer {
+public class MaxRectsPackerFast implements Packer {
 	final Settings settings;
 	private final FreeRectChoiceHeuristic[] methods = FreeRectChoiceHeuristic.values();
 	private final MaxRects maxRects = new MaxRects();
@@ -43,7 +43,7 @@ public class MaxRectsPackerPR implements Packer {
 		}
 	};
 
-	public MaxRectsPackerPR(Settings settings) {
+	public MaxRectsPackerFast(Settings settings) {
 		this.settings = settings;
 		if (settings.minWidth > settings.maxWidth) throw new RuntimeException("Page min width cannot be higher than max width.");
 		if (settings.minHeight > settings.maxHeight)
@@ -84,8 +84,10 @@ public class MaxRectsPackerPR implements Packer {
 
 		Array<Page> pages = new Array<>();
 		while (inputRects.size > 0) {
-			progress.count = n - inputRects.size + 1;
-			if (progress.update(progress.count, n)) break;
+			if(progress != null) {
+				progress.count = n - inputRects.size + 1;
+				if (progress.update(progress.count, n)) break;
+			}
 
 			Page result = packPage(inputRects);
 			pages.add(result);

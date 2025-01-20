@@ -24,8 +24,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.RandomXS128;
 import com.badlogic.gdx.tools.StartupHelper;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker.Page;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker.Rect;
@@ -38,24 +38,31 @@ import java.util.Random;
 public class TexturePackerTest extends ApplicationAdapter {
 	ShapeRenderer renderer;
 	Array<Page> pages;
+	Settings settings;
+	long seed = 1234L;
 
 	public void create () {
+		MathUtils.random.setSeed(seed);
 		renderer = new ShapeRenderer();
+		settings = new Settings();
 	}
 
 	public void render () {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		Settings settings = new Settings();
-		settings.fast = true;
+		settings.fast = !settings.fast;
+		if(settings.fast)
+			MathUtils.random.setSeed(seed = System.nanoTime());
+		else
+			MathUtils.random.setSeed(seed);
 		settings.pot = false;
 		settings.maxWidth = 1024;
 		settings.maxHeight = 1024;
 		settings.rotation = false;
 		settings.paddingX = 0;
 
-		if (pages == null) {
-			Random random = new RandomXS128(1243);
+//		if (pages == null) {
+			Random random = MathUtils.random;
 			Array<Rect> inputRects = new Array<>();
 			for (int i = 0; i < 240; i++) {
 				Rect rect = new Rect();
@@ -74,13 +81,16 @@ public class TexturePackerTest extends ApplicationAdapter {
 
 			long s = System.nanoTime();
 
-			pages = new MaxRectsPacker(settings).pack(inputRects);
+			if(settings.fast)
+				pages = new MaxRectsPackerFast(settings).pack(inputRects);
+			else
+				pages = new MaxRectsPacker(settings).pack(inputRects);
 
 			long e = System.nanoTime();
 			System.out.println("fast: " + settings.fast);
-			System.out.println((e - s) / 1e6f + " ms");
+			System.out.println((e - s) * 1e-6f + " ms");
 			System.out.println();
-		}
+//		}
 
 		int x = 20, y = 20;
 		for (Page page : pages) {
@@ -111,7 +121,7 @@ public class TexturePackerTest extends ApplicationAdapter {
 	}
 
 	public static void main (String[] args) {
-		if (StartupHelper.startNewJvmIfRequired()) return; // don't execute any code
+		if (StartupHelper.startNewJvmIfRequired()) return;
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.disableAudio(true);
 		config.setTitle("");
