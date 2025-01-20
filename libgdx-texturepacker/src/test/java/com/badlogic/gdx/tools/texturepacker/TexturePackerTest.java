@@ -51,11 +51,8 @@ public class TexturePackerTest extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		settings.fast = !settings.fast;
-		if(settings.fast) {
-			settings.faster = !settings.faster;
-			if(settings.faster)
-				seed = System.nanoTime();
-		}
+		if(settings.fast)
+			seed = System.nanoTime();
 		MathUtils.random.setSeed(seed);
 		settings.pot = false;
 		settings.maxWidth = 1024;
@@ -83,13 +80,13 @@ public class TexturePackerTest extends ApplicationAdapter {
 
 			long s = System.nanoTime();
 
-			if(settings.faster)
-				pages = new MaxRectsPackerFaster(settings).pack(inputRects);
+			if(settings.fast)
+				pages = new MaxRectsPackerFast(settings).pack(inputRects);
 			else
 				pages = new MaxRectsPacker(settings).pack(inputRects);
 
 			long e = System.nanoTime();
-			System.out.println("fast: " + settings.fast + ", faster: " + settings.faster);
+			System.out.println("fast: " + settings.fast);
 			System.out.println((e - s) * 1e-6f + " ms");
 			System.out.println();
 //		}

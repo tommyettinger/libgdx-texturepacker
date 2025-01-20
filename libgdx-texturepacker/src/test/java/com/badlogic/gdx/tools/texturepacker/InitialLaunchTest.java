@@ -21,7 +21,7 @@ public class InitialLaunchTest extends ApplicationAdapter {
     SpriteBatch batch;
     @Override
     public void create() {
-        FileHandle loc = Gdx.files.local("tmp/cgAtlas"+ MathUtils.random(3) +"/default.atlas");
+        FileHandle loc = Gdx.files.local("tmp/cgAtlas"+ (MathUtils.random(1) * 3) +"/default.atlas");
         if(!loc.exists()) loc = Gdx.files.local("tmp/cgAtlas3/default.atlas");
         atlas = new TextureAtlas(loc);
 //        atlas = new TextureAtlas(Gdx.files.local("tmp/atlas/default.atlas"));
@@ -49,8 +49,7 @@ public class InitialLaunchTest extends ApplicationAdapter {
         long startTime = System.currentTimeMillis();
         TexturePacker.Settings settings = new Json().fromJson(TexturePacker.Settings.class, new FileReader("testGraphics/cg/pack.json"));
         int speed = 0;
-        if(settings.fast) speed += 2;
-        if(settings.faster) speed += 1;
+        if(settings.fast) speed = 3;
         TexturePacker.process(settings, "testGraphics/cg/", "tmp/cgAtlas" + speed, "default.atlas");
 //        TexturePacker.Settings settings = new TexturePacker.Settings();
 //        TexturePacker.process(settings, "testGraphics/unpacked", "tmp/atlas", "default.atlas");
