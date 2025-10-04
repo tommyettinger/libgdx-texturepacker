@@ -54,7 +54,7 @@ public class TexturePackerTest extends ApplicationAdapter {
 		if(settings.fast)
 			seed = System.nanoTime();
 		MathUtils.random.setSeed(seed);
-		settings.pot = false;
+		settings.pot = true;
 		settings.maxWidth = 1024;
 		settings.maxHeight = 1024;
 		settings.rotation = false;

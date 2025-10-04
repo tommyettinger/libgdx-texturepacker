@@ -258,11 +258,11 @@ public class MaxRectsPackerFast implements Packer {
 
 		public BinarySearch (int min, int max, int fuzziness, boolean pot, boolean mod4) {
 			if (pot) {
-				this.min = (int)(Math.log(MathUtils.nextPowerOfTwo(min)) / Math.log(2));
-				this.max = (int)(Math.log(MathUtils.nextPowerOfTwo(max)) / Math.log(2));
+				this.min = Integer.numberOfTrailingZeros(MathUtils.nextPowerOfTwo(min));
+				this.max = Integer.numberOfTrailingZeros(MathUtils.nextPowerOfTwo(max));
 			} else if (mod4) {
-				this.min = min % 4 == 0 ? min : min + 4 - (min % 4);
-				this.max = max % 4 == 0 ? max : max + 4 - (max % 4);
+				this.min = (min & 3) == 0 ? min : min + 4 - (min & 3);
+				this.max = (max & 3) == 0 ? max : max + 4 - (max & 3);
 			} else {
 				this.min = min;
 				this.max = max;
@@ -276,8 +276,8 @@ public class MaxRectsPackerFast implements Packer {
 			low = min;
 			high = max;
 			current = (low + high) >>> 1;
-			if (pot) return (int)Math.pow(2, current);
-			if (mod4) return current % 4 == 0 ? current : current + 4 - (current % 4);
+			if (pot) return 1 << current;
+			if (mod4) return (current & 3) == 0 ? current : current + 4 - (current & 3);
 			return current;
 		}
 
@@ -289,8 +289,8 @@ public class MaxRectsPackerFast implements Packer {
 				high = current - 1;
 			current = (low + high) >>> 1;
 			if (Math.abs(low - high) < fuzziness) return -1;
-			if (pot) return (int)Math.pow(2, current);
-			if (mod4) return current % 4 == 0 ? current : current + 4 - (current % 4);
+			if (pot) return 1 << current;
+			if (mod4) return (current & 3) == 0 ? current : current + 4 - (current & 3);
 			return current;
 		}
 	}
@@ -304,7 +304,7 @@ public class MaxRectsPackerFast implements Packer {
 		private final Array<Rect> usedRectangles = new Array<>();
 		private final Array<Rect> freeRectangles = new Array<>();
 		private final Array<Rect> rectanglesToCheckWhenPruning = new Array<>();
-		private RTree rTree = new RTree();
+		private final RTree rTree = new RTree();
 
 		public void init (int width, int height) {
 			binWidth = width;

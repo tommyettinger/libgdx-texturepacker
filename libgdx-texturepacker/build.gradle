@@ -10,7 +10,8 @@ eclipse.project.name = appName + '-lwjgl3'
 sourceSets.main.resources.srcDirs = [file('../assets').path]
 
 dependencies {
-	implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
+	//noinspection GDXOutdatedVersionGradleGroovy
+    implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
 	testImplementation ("com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"){
 		// exclude audio
 		exclude group: "org.jcraft", module: "jorbis"
