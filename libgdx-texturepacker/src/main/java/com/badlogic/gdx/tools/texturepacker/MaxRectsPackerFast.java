@@ -18,7 +18,8 @@ package com.badlogic.gdx.tools.texturepacker;
 
 import java.util.Comparator;
 
-import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.tools.texturepacker.MaxRectsPacker.BinarySearch;
+import com.badlogic.gdx.tools.texturepacker.MaxRectsPacker.FreeRectChoiceHeuristic;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker.Packer;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker.Page;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker.ProgressListener;
@@ -251,54 +252,10 @@ public class MaxRectsPackerFast implements Packer {
 		return result1.occupancy > result2.occupancy ? result1 : result2;
 	}
 
-	static class BinarySearch {
-		final boolean pot, mod4;
-		final int min, max, fuzziness;
-		int low, high, current;
-
-		public BinarySearch (int min, int max, int fuzziness, boolean pot, boolean mod4) {
-			if (pot) {
-				this.min = Integer.numberOfTrailingZeros(MathUtils.nextPowerOfTwo(min));
-				this.max = Integer.numberOfTrailingZeros(MathUtils.nextPowerOfTwo(max));
-			} else if (mod4) {
-				this.min = (min & 3) == 0 ? min : min + 4 - (min & 3);
-				this.max = (max & 3) == 0 ? max : max + 4 - (max & 3);
-			} else {
-				this.min = min;
-				this.max = max;
-			}
-			this.fuzziness = pot ? 0 : fuzziness;
-			this.pot = pot;
-			this.mod4 = mod4;
-		}
-
-		public int reset () {
-			low = min;
-			high = max;
-			current = (low + high) >>> 1;
-			if (pot) return 1 << current;
-			if (mod4) return (current & 3) == 0 ? current : current + 4 - (current & 3);
-			return current;
-		}
-
-		public int next (boolean result) {
-			if (low >= high) return -1;
-			if (result)
-				low = current + 1;
-			else
-				high = current - 1;
-			current = (low + high) >>> 1;
-			if (Math.abs(low - high) < fuzziness) return -1;
-			if (pot) return 1 << current;
-			if (mod4) return (current & 3) == 0 ? current : current + 4 - (current & 3);
-			return current;
-		}
-	}
-
-	/** Maximal rectangles bin packing algorithm. Adapted from this C++ public domain source:
-	 * http://clb.demon.fi/projects/even-more-rectangle-bin-packing
-	 * @author Jukka Jyl�nki
-	 * @author Nathan Sweet */
+	/** Maximal rectangles bin packing algorithm. Adapted from
+     * <a href="https://web.archive.org/web/20180419002528/http://clb.demon.fi/projects/even-more-rectangle-bin-packing">this C++ public domain source</a>.
+     * @author Jukka Jylänki
+     * @author Nathan Sweet */
 	class MaxRects {
 		private int binWidth, binHeight;
 		private final Array<Rect> usedRectangles = new Array<>();
@@ -783,19 +740,6 @@ public class MaxRectsPackerFast implements Packer {
 			return a.x >= b.x && a.y >= b.y && a.x + a.width <= b.x + b.width && a.y + a.height <= b.y + b.height;
 		}
 	}
-
-	static public enum FreeRectChoiceHeuristic {
-		/** BSSF: Positions the rectangle against the short side of a free rectangle into which it fits the best. */
-		BestShortSideFit,
-		/** BLSF: Positions the rectangle against the long side of a free rectangle into which it fits the best. */
-		BestLongSideFit,
-		/** BAF: Positions the rectangle into the smallest free rect into which it fits. */
-		BestAreaFit,
-		/** BL: Does the Tetris placement. */
-		BottomLeftRule,
-		/** CP: Choosest the placement where the rectangle touches other rects as much as possible. */
-		ContactPointRule
-	};
 
 	/** Specialized R-Tree with 2 entries per node. */
 	static class RTree {

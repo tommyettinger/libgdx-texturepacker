@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -256,11 +256,11 @@ public class MaxRectsPacker implements Packer {
 
 		public BinarySearch (int min, int max, int fuzziness, boolean pot, boolean mod4) {
 			if (pot) {
-				this.min = (int)(Math.log(MathUtils.nextPowerOfTwo(min)) / Math.log(2));
-				this.max = (int)(Math.log(MathUtils.nextPowerOfTwo(max)) / Math.log(2));
+				this.min = Integer.numberOfTrailingZeros(MathUtils.nextPowerOfTwo(min));
+				this.max = Integer.numberOfTrailingZeros(MathUtils.nextPowerOfTwo(max));
 			} else if (mod4) {
-				this.min = min % 4 == 0 ? min : min + 4 - (min % 4);
-				this.max = max % 4 == 0 ? max : max + 4 - (max % 4);
+				this.min = (min & 3) == 0 ? min : min + 4 - (min & 3);
+				this.max = (max & 3) == 0 ? max : max + 4 - (max & 3);
 			} else {
 				this.min = min;
 				this.max = max;
@@ -274,8 +274,8 @@ public class MaxRectsPacker implements Packer {
 			low = min;
 			high = max;
 			current = (low + high) >>> 1;
-			if (pot) return (int)Math.pow(2, current);
-			if (mod4) return current % 4 == 0 ? current : current + 4 - (current % 4);
+			if (pot) return 1 << current;
+			if (mod4) return (current & 3) == 0 ? current : current + 4 - (current & 3);
 			return current;
 		}
 
@@ -287,14 +287,14 @@ public class MaxRectsPacker implements Packer {
 				high = current - 1;
 			current = (low + high) >>> 1;
 			if (Math.abs(low - high) < fuzziness) return -1;
-			if (pot) return (int)Math.pow(2, current);
-			if (mod4) return current % 4 == 0 ? current : current + 4 - (current % 4);
+			if (pot) return 1 << current;
+			if (mod4) return (current & 3) == 0 ? current : current + 4 - (current & 3);
 			return current;
 		}
 	}
 
 	/** Maximal rectangles bin packing algorithm. Adapted from
-	 * <a href="http://clb.demon.fi/projects/even-more-rectangle-bin-packing">this C++ public domain source</a>.
+	 * <a href="https://web.archive.org/web/20180419002528/http://clb.demon.fi/projects/even-more-rectangle-bin-packing">this C++ public domain source</a>.
 	 * @author Jukka Jylänki
 	 * @author Nathan Sweet */
 	class MaxRects {
@@ -421,22 +421,22 @@ public class MaxRectsPacker implements Packer {
 
 			Rect newNode = null;
 			switch (method) {
-			case BestShortSideFit:
-				newNode = findPositionForNewNodeBestShortSideFit(width, height, rotatedWidth, rotatedHeight, rotate);
-				break;
-			case BottomLeftRule:
-				newNode = findPositionForNewNodeBottomLeft(width, height, rotatedWidth, rotatedHeight, rotate);
-				break;
-			case ContactPointRule:
-				newNode = findPositionForNewNodeContactPoint(width, height, rotatedWidth, rotatedHeight, rotate);
-				newNode.score1 = -newNode.score1; // Reverse since we are minimizing, but for contact point score bigger is better.
-				break;
-			case BestLongSideFit:
-				newNode = findPositionForNewNodeBestLongSideFit(width, height, rotatedWidth, rotatedHeight, rotate);
-				break;
-			case BestAreaFit:
-				newNode = findPositionForNewNodeBestAreaFit(width, height, rotatedWidth, rotatedHeight, rotate);
-				break;
+				case BestShortSideFit:
+					newNode = findPositionForNewNodeBestShortSideFit(width, height, rotatedWidth, rotatedHeight, rotate);
+					break;
+				case BottomLeftRule:
+					newNode = findPositionForNewNodeBottomLeft(width, height, rotatedWidth, rotatedHeight, rotate);
+					break;
+				case ContactPointRule:
+					newNode = findPositionForNewNodeContactPoint(width, height, rotatedWidth, rotatedHeight, rotate);
+					newNode.score1 = -newNode.score1; // Reverse since we are minimizing, but for contact point score bigger is better.
+					break;
+				case BestLongSideFit:
+					newNode = findPositionForNewNodeBestLongSideFit(width, height, rotatedWidth, rotatedHeight, rotate);
+					break;
+				case BestAreaFit:
+					newNode = findPositionForNewNodeBestAreaFit(width, height, rotatedWidth, rotatedHeight, rotate);
+					break;
 			}
 
 			// Cannot fit the current rectangle.
@@ -492,7 +492,7 @@ public class MaxRectsPacker implements Packer {
 		}
 
 		private Rect findPositionForNewNodeBestShortSideFit (int width, int height, int rotatedWidth, int rotatedHeight,
-			boolean rotate) {
+															 boolean rotate) {
 			Rect bestNode = new Rect();
 			bestNode.score1 = Integer.MAX_VALUE;
 
@@ -538,7 +538,7 @@ public class MaxRectsPacker implements Packer {
 		}
 
 		private Rect findPositionForNewNodeBestLongSideFit (int width, int height, int rotatedWidth, int rotatedHeight,
-			boolean rotate) {
+															boolean rotate) {
 			Rect bestNode = new Rect();
 
 			bestNode.score2 = Integer.MAX_VALUE;
@@ -583,7 +583,7 @@ public class MaxRectsPacker implements Packer {
 		}
 
 		private Rect findPositionForNewNodeBestAreaFit (int width, int height, int rotatedWidth, int rotatedHeight,
-			boolean rotate) {
+														boolean rotate) {
 			Rect bestNode = new Rect();
 
 			bestNode.score1 = Integer.MAX_VALUE; // best area fit, score2 is best short side fit
@@ -651,7 +651,7 @@ public class MaxRectsPacker implements Packer {
 		}
 
 		private Rect findPositionForNewNodeContactPoint (int width, int height, int rotatedWidth, int rotatedHeight,
-			boolean rotate) {
+														 boolean rotate) {
 
 			Rect bestNode = new Rect();
 			bestNode.score1 = -1; // best contact score
@@ -754,7 +754,7 @@ public class MaxRectsPacker implements Packer {
 		}
 	}
 
-	static public enum FreeRectChoiceHeuristic {
+	public enum FreeRectChoiceHeuristic {
 		/** BSSF: Positions the rectangle against the short side of a free rectangle into which it fits the best. */
 		BestShortSideFit,
 		/** BLSF: Positions the rectangle against the long side of a free rectangle into which it fits the best. */
@@ -765,5 +765,5 @@ public class MaxRectsPacker implements Packer {
 		BottomLeftRule,
 		/** CP: Choosest the placement where the rectangle touches other rects as much as possible. */
 		ContactPointRule
-	};
+	}
 }
