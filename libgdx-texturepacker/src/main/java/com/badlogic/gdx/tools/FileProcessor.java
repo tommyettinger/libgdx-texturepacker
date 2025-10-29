@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,22 +33,14 @@ import java.util.regex.Pattern;
  * @author Nathan Sweet */
 public class FileProcessor {
 	FilenameFilter inputFilter;
-	Comparator<File> comparator = new Comparator<File>() {
-		public int compare (File o1, File o2) {
-			return o1.getName().compareTo(o2.getName());
-		}
-	};
+	Comparator<File> comparator = (o1, o2) -> o1.getName().compareTo(o2.getName());
 	Array<Pattern> inputRegex = new Array<>();
 	String outputSuffix;
 	ArrayList<Entry> outputFiles = new ArrayList<>();
 	boolean recursive = true;
 	boolean flattenOutput;
 
-	Comparator<Entry> entryComparator = new Comparator<Entry>() {
-		public int compare (Entry o1, Entry o2) {
-			return comparator.compare(o1.inputFile, o2.inputFile);
-		}
-	};
+	Comparator<Entry> entryComparator = (o1, o2) -> comparator.compare(o1.inputFile, o2.inputFile);
 
 	public FileProcessor() {
 	}
@@ -61,6 +53,8 @@ public class FileProcessor {
 		outputSuffix = processor.outputSuffix;
 		recursive = processor.recursive;
 		flattenOutput = processor.flattenOutput;
+        outputFiles = processor.outputFiles;
+        entryComparator = processor.entryComparator;
 	}
 
 	public FileProcessor setInputFilter (FilenameFilter inputFilter) {
@@ -217,7 +211,7 @@ public class FileProcessor {
 				dirToEntries.get(dir).add(entry);
 			}
 			if (recursive && file.isDirectory()) {
-				File subdir = outputDir.getPath().length() == 0 ? new File(file.getName()) : new File(outputDir, file.getName());
+				File subdir = outputDir.getPath().isEmpty() ? new File(file.getName()) : new File(outputDir, file.getName());
 				process(file.listFiles(inputFilter), outputRoot, subdir, dirToEntries, depth + 1);
 			}
 		}

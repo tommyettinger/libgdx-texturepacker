@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -66,20 +66,14 @@ public class MaxRectsPackerFast implements Packer {
 		if (settings.fast) {
 			if (settings.rotation) {
 				// Sort by longest side if rotation is enabled.
-				sort.sort(inputRects, new Comparator<Rect>() {
-					public int compare (Rect o1, Rect o2) {
-						int n1 = Math.max(o1.width, o1.height);
-						int n2 = Math.max(o2.width, o2.height);
-						return n2 - n1;
-					}
+				sort.sort(inputRects, (o1, o2) -> {
+					int n1 = Math.max(o1.width, o1.height);
+					int n2 = Math.max(o2.width, o2.height);
+					return n2 - n1;
 				});
 			} else {
 				// Sort only by width (largest to smallest) if rotation is disabled.
-				sort.sort(inputRects, new Comparator<Rect>() {
-					public int compare (Rect o1, Rect o2) {
-						return o2.width - o1.width;
-					}
-				});
+				sort.sort(inputRects, (o1, o2) -> o2.width - o1.width);
 			}
 		}
 
@@ -684,7 +678,7 @@ public class MaxRectsPackerFast implements Packer {
 			}
 
 			if (usedNode.y < freeNode.y + freeNode.height && usedNode.y + usedNode.height > freeNode.y) {
-				// New node at the left side of the used node.
+				// New node on the left side of the used node.
 				if (usedNode.x > freeNode.x && usedNode.x < freeNode.x + freeNode.width) {
 					Rect newNode = new Rect(freeNode);
 					newNode.width = usedNode.x - newNode.x;
@@ -692,7 +686,7 @@ public class MaxRectsPackerFast implements Packer {
 					rectanglesToCheckWhenPruning.add(newNode);
 				}
 
-				// New node at the right side of the used node.
+				// New node on the right side of the used node.
 				if (usedNode.x + usedNode.width < freeNode.x + freeNode.width) {
 					Rect newNode = new Rect(freeNode);
 					newNode.x = usedNode.x + usedNode.width;
@@ -907,6 +901,7 @@ public class MaxRectsPackerFast implements Packer {
 				return;
 			}
 			Node parent = findParent(root, node);
+			if(parent == null) return;
 
 			for (int i = 0; i < parent.childCount; i++) {
 				if (parent.children[i] == node) {

@@ -654,10 +654,28 @@ public class TexturePacker {
 		}
 
 		Rect (Rect rect) {
+			name = rect.name;
+			image = rect.image;
+			offsetX = rect.offsetX;
+			offsetY = rect.offsetY;
+			regionWidth = rect.regionWidth;
+			regionHeight = rect.regionHeight;
+			originalWidth = rect.originalWidth;
+			originalHeight = rect.originalHeight;
 			x = rect.x;
 			y = rect.y;
 			width = rect.width;
 			height = rect.height;
+			index = rect.index;
+			rotated = rect.rotated;
+			aliases = rect.aliases;
+			splits = rect.splits;
+			pads = rect.pads;
+			canRotate = rect.canRotate;
+			score1 = rect.score1;
+			score2 = rect.score2;
+			file = rect.file;
+			isPatch = rect.isPatch;
 		}
 
 		void set (Rect rect) {
@@ -980,15 +998,15 @@ public class TexturePacker {
 
 		public String getScaledPackFileName (String packFileName, int scaleIndex) {
 			// Use suffix if not empty string.
-			if (scaleSuffix[scaleIndex].length() > 0)
-				packFileName += scaleSuffix[scaleIndex];
-			else {
+			if (scaleSuffix[scaleIndex].isEmpty()) {
 				// Otherwise if scale != 1 or multiple scales, use subdirectory.
 				float scaleValue = scale[scaleIndex];
 				if (scale.length != 1) {
 					packFileName = (scaleValue == (int)scaleValue ? Integer.toString((int)scaleValue) : Float.toString(scaleValue))
 						+ "/" + packFileName;
 				}
+			} else {
+				packFileName += scaleSuffix[scaleIndex];
 			}
 			return packFileName;
 		}

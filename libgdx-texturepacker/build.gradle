@@ -10,7 +10,6 @@ eclipse.project.name = appName + '-lwjgl3'
 sourceSets.main.resources.srcDirs = [file('../assets').path]
 
 dependencies {
-	//noinspection GDXOutdatedVersionGradleGroovy
     implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
 	testImplementation ("com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"){
 		// exclude audio

@@ -30,7 +30,7 @@ public class InitialLaunchTest extends ApplicationAdapter {
 
     @Override
     public void render() {
-        ScreenUtils.clear(Color.BLACK);;
+        ScreenUtils.clear(Color.BLACK);
         batch.begin();
         batch.draw(atlas.getTextures().first(), 0, 0);
         batch.end();
@@ -40,8 +40,8 @@ public class InitialLaunchTest extends ApplicationAdapter {
      * PR not used: Processed in 89456 ms.
      * PR used:     Processed in 8949 ms.
      * fast==false: Processed in 3226472 ms.
-     * @param arg
-     * @throws FileNotFoundException
+     * @param arg ignored
+     * @throws FileNotFoundException if test files are not found
      */
     public static void main(String[] arg) throws FileNotFoundException {
         if (StartupHelper. startNewJvmIfRequired()) return; // This handles macOS support and helps on Windows.

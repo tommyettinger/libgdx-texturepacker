@@ -64,20 +64,14 @@ public class MaxRectsPacker implements Packer {
 		if (settings.fast) {
 			if (settings.rotation) {
 				// Sort by longest side if rotation is enabled.
-				sort.sort(inputRects, new Comparator<Rect>() {
-					public int compare (Rect o1, Rect o2) {
-						int n1 = Math.max(o1.width, o1.height);
-						int n2 = Math.max(o2.width, o2.height);
-						return n2 - n1;
-					}
+				sort.sort(inputRects, (o1, o2) -> {
+					int n1 = Math.max(o1.width, o1.height);
+					int n2 = Math.max(o2.width, o2.height);
+					return n2 - n1;
 				});
 			} else {
 				// Sort only by width (largest to smallest) if rotation is disabled.
-				sort.sort(inputRects, new Comparator<Rect>() {
-					public int compare (Rect o1, Rect o2) {
-						return o2.width - o1.width;
-					}
-				});
+				sort.sort(inputRects, (o1, o2) -> o2.width - o1.width);
 			}
 		}
 
@@ -709,14 +703,14 @@ public class MaxRectsPacker implements Packer {
 			}
 
 			if (usedNode.y < freeNode.y + freeNode.height && usedNode.y + usedNode.height > freeNode.y) {
-				// New node at the left side of the used node.
+				// New node on the left side of the used node.
 				if (usedNode.x > freeNode.x && usedNode.x < freeNode.x + freeNode.width) {
 					Rect newNode = new Rect(freeNode);
 					newNode.width = usedNode.x - newNode.x;
 					freeRectangles.add(newNode);
 				}
 
-				// New node at the right side of the used node.
+				// New node on the right side of the used node.
 				if (usedNode.x + usedNode.width < freeNode.x + freeNode.width) {
 					Rect newNode = new Rect(freeNode);
 					newNode.x = usedNode.x + usedNode.width;

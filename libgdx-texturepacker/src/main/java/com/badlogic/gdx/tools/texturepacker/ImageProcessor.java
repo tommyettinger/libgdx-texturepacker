@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
 
 public class ImageProcessor {
 	static private final BufferedImage emptyImage = new BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR);
-	static private final Pattern indexPattern = Pattern.compile("(.+)_(\\d+)$");
+	static private final Pattern indexPattern = Pattern.compile("(.+)_([0-9]+)$");
 
 	private final Settings settings;
 	private final HashMap<String, Rect> crcs = new HashMap<>();
@@ -402,7 +402,7 @@ public class ImageProcessor {
 	}
 
 	/** Hunts for the start or end of a sequence of split pixels. Begins searching at (startX, startY) then follows along the x or
-	 * y axis (depending on value of xAxis) for the first non-transparent pixel if startPoint is true, or the first transparent
+	 * y-axis (depending on value of xAxis) for the first non-transparent pixel if startPoint is true, or the first transparent
 	 * pixel if startPoint is false. Returns 0 if none found, as 0 is considered an invalid split point being in the outer border
 	 * which will be stripped. */
 	static private int getSplitPoint (WritableRaster raster, String name, int startX, int startY, boolean startPoint,
