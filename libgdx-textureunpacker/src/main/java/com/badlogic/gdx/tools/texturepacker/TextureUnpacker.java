@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,7 +51,7 @@ public class TextureUnpacker {
 		// check if number of args is right
 		if (numArgs < 1) return 0;
 		// check if the input file's extension is right
-		boolean extension = args[0].substring(args[0].length() - ATLAS_FILE_EXTENSION.length()).equals(ATLAS_FILE_EXTENSION);
+		boolean extension = args[0].endsWith(ATLAS_FILE_EXTENSION);
 		// check if the directory names are valid
 		boolean directory = true;
 		if (numArgs >= 2) directory &= checkDirectoryValidity(args[1]);
@@ -71,7 +71,7 @@ public class TextureUnpacker {
 		return path;
 	}
 
-	/** Splits an atlas into seperate image and ninepatch files. */
+	/** Splits an atlas into separate image and ninepatch files. */
 	public void splitAtlas (TextureAtlasData atlas, String outputDir) {
 		// create the output directory if it did not exist yet
 		File outputDirFile = new File(outputDir);
@@ -84,12 +84,17 @@ public class TextureUnpacker {
 			// load the image file belonging to this page as a Buffered Image
 			File file = page.textureFile.file();
 			if (!file.exists()) throw new RuntimeException("Unable to find atlas image: " + file.getAbsolutePath());
-			BufferedImage img = null;
+			BufferedImage img;
 			try {
 				img = ImageIO.read(file);
 			} catch (IOException e) {
 				printExceptionAndExit(e);
+                return;
 			}
+            if(img == null) {
+                printExceptionAndExit(new NullPointerException("ImageIO was unable to read " + file));
+                return;
+            }
 			for (Region region : atlas.getRegions()) {
 				if (!quiet) System.out.printf("Processing image for %s: x[%s] y[%s] w[%s] h[%s], rotate[%s]%n",
 					region.name, region.left, region.top, region.width, region.height, region.rotate);
@@ -101,7 +106,7 @@ public class TextureUnpacker {
 
 					// check if the region is a ninepatch or a normal image and delegate accordingly
 					if (region.findValue("split") == null) {
-						splitImage = extractImage(img, region, outputDirFile, 0);
+						splitImage = extractImage(img, region, 0);
 						if (region.width != region.originalWidth || region.height != region.originalHeight) {
 							BufferedImage originalImg = new BufferedImage(region.originalWidth, region.originalHeight, img.getType());
 							Graphics2D g2 = originalImg.createGraphics();
@@ -112,7 +117,7 @@ public class TextureUnpacker {
 						}
 						extension = OUTPUT_TYPE;
 					} else {
-						splitImage = extractNinePatch(img, region, outputDirFile);
+						splitImage = extractNinePatch(img, region);
 						extension = "9." + OUTPUT_TYPE;
 					}
 
@@ -139,10 +144,9 @@ public class TextureUnpacker {
 	/** Extract an image from a texture atlas.
 	 * @param page The image file related to the page the region is in
 	 * @param region The region to extract
-	 * @param outputDirFile The output directory
 	 * @param padding padding (in pixels) to apply to the image
 	 * @return The extracted image */
-	private BufferedImage extractImage (BufferedImage page, Region region, File outputDirFile, int padding) {
+	private BufferedImage extractImage (BufferedImage page, Region region, int padding) {
 		BufferedImage splitImage;
 
 		// get the needed part of the page and rotate if needed
@@ -176,8 +180,8 @@ public class TextureUnpacker {
 	 * @see <a href="http://developer.android.com/guide/topics/graphics/2d-graphics.html#nine-patch">ninepatch specification</a>
 	 * @param page The image file related to the page the region is in
 	 * @param region The region to extract */
-	private BufferedImage extractNinePatch (BufferedImage page, Region region, File outputDirFile) {
-		BufferedImage splitImage = extractImage(page, region, outputDirFile, NINEPATCH_PADDING);
+	private BufferedImage extractNinePatch (BufferedImage page, Region region) {
+		BufferedImage splitImage = extractImage(page, region, NINEPATCH_PADDING);
 		Graphics2D g2 = splitImage.createGraphics();
 		g2.setColor(Color.BLACK);
 
