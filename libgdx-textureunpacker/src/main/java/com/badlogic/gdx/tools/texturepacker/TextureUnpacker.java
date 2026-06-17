@@ -36,6 +36,12 @@ import javax.imageio.ImageIO;
  * @author Nathan Sweet
  * @author Michael Bazos */
 public class TextureUnpacker {
+	/**
+	 * Not typically used directly; see {@link #main(String[])}.
+	 */
+	public TextureUnpacker() {
+
+	}
 	private static final String DEFAULT_OUTPUT_PATH = "output";
 	private static final int NINEPATCH_PADDING = 1;
 	private static final String OUTPUT_TYPE = "png";
@@ -71,7 +77,10 @@ public class TextureUnpacker {
 		return path;
 	}
 
-	/** Splits an atlas into separate image and ninepatch files. */
+	/** Splits an atlas into separate image and ninepatch files.
+	 * @param atlas the data of a TextureAtlas, storing info on every region in the atlas
+	 * @param outputDir if this directory doesn't yet exist, it will be created and images unpacked here
+	 * */
 	public void splitAtlas (TextureAtlasData atlas, String outputDir) {
 		// create the output directory if it did not exist yet
 		File outputDirFile = new File(outputDir);
@@ -212,10 +221,20 @@ public class TextureUnpacker {
 		System.exit(1);
 	}
 
+	/**
+	 * Sets whether the unpacker should unpack quietly or not.
+	 * @param quiet if true, shushes the output
+	 */
 	public void setQuiet (boolean quiet) {
 		this.quiet = quiet;
 	}
 
+	/**
+	 * Splits the images stored in an atlas into their original, unpacked images.
+	 * @param atlasFile cannot be null; the path to an atlas file to unpack
+	 * @param imageDir if null, will be the same directory holding {@code atlasFile}; otherwise, the path to texture atlas pages
+	 * @param outputDir if null, a sibling directory of {@code atlasFile} called {@code output/}; otherwise, the path to unpack images into
+	 */
 	public static void splitFiles(String atlasFile, String imageDir, String outputDir) {
 		File atlasFileHandle = new File(atlasFile).getAbsoluteFile();
 		if (!atlasFileHandle.exists()) throw new RuntimeException("Atlas file not found: " + atlasFileHandle.getAbsolutePath());
@@ -230,6 +249,13 @@ public class TextureUnpacker {
 		new TextureUnpacker().splitAtlas(atlas, outputDir);
 
 	}
+
+	/**
+	 * Takes 0 to 3 arguments, with 0 printing a help message. The first argument is the atlas file to unpack, the
+	 * second argument is the image directory holding the texture atlas pages to unpack, and the third argument is the
+	 * output directory to place unpacked images.
+	 * @param args must not be null; may be 0 to 3 paths
+	 */
 	public static void main (String[] args) {
 		String atlasFile = null, imageDir = null, outputDir = null;
 
