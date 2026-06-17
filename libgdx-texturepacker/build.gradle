@@ -5,7 +5,7 @@ import proguard.gradle.ProGuardTask
 apply plugin: 'application'
 
 java.sourceCompatibility = 1.8
-mainClassName = 'com.badlogic.gdx.tools.texturepacker.TexturePacker'
+application.mainClass =  'com.badlogic.gdx.tools.texturepacker.TexturePacker'
 eclipse.project.name = appName + '-lwjgl3'
 sourceSets.main.resources.srcDirs = [file('../assets').path]
 
@@ -23,7 +23,7 @@ dependencies {
 tasks.register('fatJar', org.gradle.jvm.tasks.Jar) {
 	dependsOn classes
 	archiveFileName.set("${project.name}-fat.jar")
-	duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	dependsOn configurations.runtimeClasspath
 	from files(sourceSets.main.output.getClassesDirs())
 	from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
@@ -32,7 +32,7 @@ tasks.register('fatJar', org.gradle.jvm.tasks.Jar) {
 		exclude('META-INF/INDEX.LIST', 'META-INF/maven/**')
 	}
 	manifest {
-		attributes 'Main-Class': project.mainClassName
+		attributes 'Main-Class': application.mainClass
 	}
 	doLast {
 		file(archiveFile).setExecutable(true, false)
