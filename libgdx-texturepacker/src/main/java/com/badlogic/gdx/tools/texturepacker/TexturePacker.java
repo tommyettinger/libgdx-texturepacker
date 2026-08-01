@@ -63,16 +63,16 @@ public class TexturePacker {
 		this.settings = settings;
 
 		if (settings.pot) {
-			if (settings.maxWidth != MathUtils.nextPowerOfTwo(settings.maxWidth))
+			if (settings.maxWidth != (settings.maxWidth & -settings.maxWidth))
 				throw new RuntimeException("If pot is true, maxWidth must be a power of two: " + settings.maxWidth);
-			if (settings.maxHeight != MathUtils.nextPowerOfTwo(settings.maxHeight))
+			if (settings.maxHeight != (settings.maxHeight & -settings.maxHeight))
 				throw new RuntimeException("If pot is true, maxHeight must be a power of two: " + settings.maxHeight);
 		}
 
 		if (settings.multipleOfFour) {
-			if (settings.maxWidth % 4 != 0)
+			if ((settings.maxWidth & 3) != 0)
 				throw new RuntimeException("If mod4 is true, maxWidth must be evenly divisible by 4: " + settings.maxWidth);
-			if (settings.maxHeight % 4 != 0)
+			if ((settings.maxHeight & 3) != 0)
 				throw new RuntimeException("If mod4 is true, maxHeight must be evenly divisible by 4: " + settings.maxHeight);
 		}
 
