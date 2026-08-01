@@ -76,6 +76,19 @@ public class TexturePacker {
 				throw new RuntimeException("If mod4 is true, maxHeight must be evenly divisible by 4: " + settings.maxHeight);
 		}
 
+		if (settings.duplicatePadding) {
+			if(settings.paddingX < 2 && settings.paddingY < 2){
+				System.err.println("When duplicatePadding is enabled, paddingX and paddingY should be at least 2.");
+				System.err.println("The current settings may cause fringing artifacts with some texture filters.");
+			} else if(settings.paddingX < 2){
+				System.err.println("When duplicatePadding is enabled, paddingX should be at least 2.");
+				System.err.println("The current settings may cause fringing artifacts with some texture filters.");
+			} else if(settings.paddingY < 2){
+				System.err.println("When duplicatePadding is enabled, paddingY should be at least 2.");
+				System.err.println("The current settings may cause fringing artifacts with some texture filters.");
+			}
+		}
+
 		if (settings.grid)
 			packer = new GridPacker(settings);
 		else if (settings.fast)
